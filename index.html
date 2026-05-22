@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>The Roger Path | Mobile Uplink</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === EXPLORATION LAB (MOBILE UPLINK THEME) === */
+        :root {
+            --bg-base: #020617;       
+            --bg-panel: rgba(15, 23, 42, 0.65); 
+            --bg-card: rgba(30, 41, 59, 0.45);  
+            --accent-primary: #22d3ee;   
+            --accent-secondary: #818cf8; 
+            --accent-alert: #f43f5e;     
+            --text-main: #f8fafc;        
+            --text-muted: #94a3b8;       
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --glow-primary: rgba(34, 211, 238, 0.4);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #000; 
+            color: var(--text-main);
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-heading { font-family: 'Space Grotesk', sans-serif; }
+        .font-code { font-family: 'Fira Code', monospace; }
+
+        /* Mobile App Container Frame */
+        #mobile-app {
+            width: 100%; max-width: 430px; 
+            height: 100vh; max-height: 932px;
+            background-color: var(--bg-base);
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 50px rgba(34, 211, 238, 0.1);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+        }
+
+        /* Layout */
+        header { flex-shrink: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(16px); z-index: 50; border-bottom: 1px solid var(--border-soft); }
+        main { flex-grow: 1; overflow-y: auto; padding: 1.5rem; position: relative; }
+
+        /* Progress Bar */
+        .progress-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 15px; }
+        .progress-fill { height: 100%; background: var(--accent-primary); transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 0 10px var(--accent-primary); }
+
+        /* Glass Cards & Buttons */
+        .question-card { 
+            background: var(--bg-panel); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-soft); 
+            border-radius: 24px; padding: 1.8rem; 
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+        }
+        
+        .opt-btn { 
+            width: 100%; text-align: left; background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border-soft); padding: 1.2rem; border-radius: 12px; 
+            margin-bottom: 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 1rem;
+            transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; 
+        }
+        .opt-btn:active { transform: scale(0.98); }
+        .opt-btn.selected-correct { border-color: var(--accent-primary); background: rgba(34, 211, 238, 0.15); color: var(--accent-primary); box-shadow: inset 0 0 15px rgba(34, 211, 238, 0.1);}
+        .opt-btn.selected-error { border-color: var(--accent-alert); background: rgba(244, 63, 94, 0.15); color: var(--accent-alert); }
+
+        .btn-primary { 
+            width: 100%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #000; padding: 1.2rem; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 0.1em; text-align: center; border: none; 
+            transition: all 0.2s; box-shadow: 0 4px 15px var(--glow-primary);
+        }
+        .btn-primary:active { transform: scale(0.97); box-shadow: 0 0 20px var(--glow-primary);}
+
+        /* Input specific */
+        .type-input { 
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-soft); 
+            color: var(--accent-primary); padding: 1.2rem; border-radius: 12px; 
+            font-family: 'Fira Code', monospace; text-align: center; margin-bottom: 1.2rem; font-size: 1.1rem; font-weight: 600;
+        }
+        .type-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+        .type-input.error { border-color: var(--accent-alert); color: var(--accent-alert); animation: shake 0.4s; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Confetti Canvas */
+        #confetti { position: absolute; inset: 0; pointer-events: none; z-index: 100; }
+        
+        .hide { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-app">
+        <!-- Header -->
+        <header class="p-5 flex flex-col">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-[rgba(34,211,238,0.1)] border border-[rgba(34,211,238,0.3)] flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.2)]"><i class="fas fa-satellite-dish text-[var(--accent-primary)] text-sm"></i></div>
+                    <div>
+                        <h1 class="text-[16px] font-bold leading-tight font-heading tracking-wide">Lab Uplink</h1>
+                        <p class="text-[10px] text-[var(--text-muted)] font-code uppercase tracking-[0.2em] font-semibold">Data Verification</p>
+                    </div>
+                </div>
+                <div class="text-right bg-black/40 px-3 py-1.5 rounded-full border border-[var(--border-soft)]">
+                    <span id="q-counter" class="text-xs font-code text-[var(--accent-primary)] font-bold tracking-[0.2em]">01/15</span>
+                </div>
+            </div>
+            <div class="progress-track">
+                <div id="progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </header>
+
+        <!-- Main Content (Exercises) -->
+        <main id="app-main" class="flex flex-col justify-center">
+            
+            <!-- Welcome Screen -->
+            <div id="screen-welcome" class="text-center question-card border-t-2 border-[var(--accent-primary)]">
+                <div class="w-24 h-24 bg-black/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border-soft)] shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                    <i class="fas fa-compass text-4xl text-[var(--accent-primary)]"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 font-heading tracking-tight">Talent Protocol</h2>
+                <p class="text-[14px] text-[var(--text-muted)] mb-8 leading-relaxed font-ui font-light">Connect to the mainframe. Audit the hypothesis logs using Modals of Deduction to complete your research.</p>
+                
+                <div class="text-left bg-black/40 p-5 rounded-2xl mb-8 border border-[var(--border-soft)] shadow-inner">
+                    <p class="text-[11px] font-code text-[var(--accent-primary)] font-bold tracking-wide"><i class="fas fa-check-circle mr-2"></i> Clean: "He must have practiced."</p>
+                    <p class="text-[11px] font-code text-[var(--accent-alert)] mt-3 font-bold tracking-wide"><i class="fas fa-times-circle mr-2"></i> Bug: "He must practiced."</p>
+                </div>
+                
+                <button onclick="startGame()" class="btn-primary">Initiate Uplink</button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="screen-quiz" class="hide flex flex-col justify-center h-full">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Result Screen -->
+            <div id="screen-result" class="hide text-center question-card border-t-2 border-[var(--accent-secondary)]">
+                <div class="w-24 h-24 bg-black/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border-soft)] shadow-[0_0_30px_rgba(129,140,248,0.3)]">
+                    <i class="fas fa-brain text-5xl text-[var(--accent-secondary)]"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-3 font-heading tracking-tight">Data Integrated</h2>
+                <p class="text-[14px] text-[var(--text-muted)] mb-8 font-ui font-light leading-relaxed">You have successfully analyzed the talent profiles and verified the deduction syntax.</p>
+                
+                <div class="bg-black/50 p-6 rounded-2xl border border-[var(--border-soft)] mb-8">
+                    <p class="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-[0.3em] font-code mb-2">Clarity Rate</p>
+                    <p id="final-score" class="text-5xl font-bold text-[var(--accent-primary)] font-heading">100%</p>
+                </div>
+
+                <p class="text-xs text-[var(--accent-primary)] font-code uppercase tracking-widest opacity-70">>> Disconnecting...</p>
+            </div>
+
+        </main>
+
+        <canvas id="confetti"></canvas>
+    </div>
+
+    <script>
+        // --- DATA (B2 Modals of Deduction) ---
+        const exercises = [
+            { type: 'ab', context: 'Past Deduction', bug: 'He must trained every day.', clean: 'He must have trained every day.' },
+            { type: 'ab', context: 'Impossibility (Past)', bug: 'She mustn\'t have seen the email.', clean: 'She can\'t have seen the email.' },
+            { type: 'input', context: 'Present Deduction', corrupted: 'The world is complex. It [must / be] a wicked environment.', expected: 'must be', hint: 'Inject Present Modal' },
+            { type: 'input', context: 'Speculation (Past)', corrupted: 'He was late. He [might / have / missed] the train.', expected: 'might have missed', hint: 'Inject Past Modal' },
+            { type: 'ab', context: 'Certainty (Present)', bug: 'She plays 3 instruments. She can be very talented.', clean: 'She plays 3 instruments. She must be very talented.' },
+            { type: 'input', context: 'Career Analysis', corrupted: 'He had 5 careers. He [might / be] a dabbler.', expected: 'might be', hint: 'Inject Present Modal' },
+            { type: 'ab', context: 'Error Detection', bug: 'The system crashed. Someone can\'t have made a mistake.', clean: 'The system crashed. Someone must have made a mistake.' },
+            { type: 'input', context: 'Impossibility (Past)', corrupted: 'They lost the game. They [can\'t / have / trained] hard enough.', expected: 'can\'t have trained', hint: 'Inject Past Modal' },
+            { type: 'ab', context: 'Environment Analysis', bug: 'This task has clear rules. It must be a kind environment.', clean: 'This task has clear rules. It must be a kind environment.' }, // Trick question (A is correct)
+            { type: 'input', context: 'Skill Plateau', corrupted: 'He reached a plateau. He [can\'t / be / improving] anymore.', expected: 'can\'t be improving', hint: 'Inject Present Modal' },
+            { type: 'ab', context: 'Achievement', bug: 'She won the Fields Medal. She must studied a lot.', clean: 'She won the Fields Medal. She must have studied a lot.' },
+            { type: 'input', context: 'Location Tracking', corrupted: 'I\'m not sure where he is. He [might / be] in the lab.', expected: 'might be', hint: 'Inject Present Modal' },
+            { type: 'ab', context: 'Innovation Check', bug: 'The game is a huge success. The creator might have been a genius.', clean: 'The game is a huge success. The creator must have been a genius.' },
+            { type: 'input', context: 'Inexperience', corrupted: 'He never played golf. He [can\'t / be] a grandmaster.', expected: 'can\'t be', hint: 'Inject Present Modal' },
+            { type: 'ab', context: 'Integration', bug: 'They combined two technologies. It must have been difficult.', clean: 'They combined two technologies. It must have been difficult.' } // Both identical or trick, let's make a bug version.
+        ];
+
+        // Fixing trick questions in data
+        exercises[8].bug = 'This task has clear rules. It can\'t be a kind environment.';
+        exercises[14].bug = 'They combined two technologies. It must been difficult.';
+
+        // --- STATE ---
+        let state = { current: 0, errors: 0 };
+
+        // --- LOGIC ---
+        function startGame() {
+            document.getElementById('screen-welcome').classList.add('hide');
+            document.getElementById('screen-quiz').classList.remove('hide');
+            renderQuestion();
+        }
+
+        function updateProgress() {
+            const perc = (state.current / exercises.length) * 100;
+            document.getElementById('progress').style.width = perc + '%';
+            document.getElementById('q-counter').innerText = `${String(state.current + 1).padStart(2, '0')}/${exercises.length}`;
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) { let randId = Math.floor(Math.random() * curId); curId -= 1; let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp; }
+            return array;
+        }
+
+        function renderQuestion() {
+            if (state.current >= exercises.length) return endHomework();
+            
+            updateProgress();
+            const ex = exercises[state.current];
+            const container = document.getElementById('screen-quiz');
+            
+            let html = `
+                <div class="question-card" id="q-card">
+                    <p class="text-[10px] text-[var(--accent-secondary)] font-bold uppercase tracking-[0.2em] font-code mb-5"><i class="fas fa-folder-open mr-2"></i>${ex.context}</p>
+            `;
+
+            if (ex.type === 'ab') {
+                const opts = shuffleArray([
+                    { text: ex.clean, isCorrect: true },
+                    { text: ex.bug, isCorrect: false }
+                ]);
+
+                html += `
+                    <h2 class="text-2xl font-bold text-white mb-6 font-heading tracking-tight">Select the native syntax:</h2>
+                    <div class="space-y-4" id="ab-opts">
+                        <button onclick="handleAB(this, ${opts[0].isCorrect})" class="opt-btn"><span>${opts[0].text}</span><i class="fas fa-circle text-[var(--border-soft)] text-[10px] icon-status"></i></button>
+                        <button onclick="handleAB(this, ${opts[1].isCorrect})" class="opt-btn"><span>${opts[1].text}</span><i class="fas fa-circle text-[var(--border-soft)] text-[10px] icon-status"></i></button>
+                    </div>
+                `;
+            } else if (ex.type === 'input') {
+                html += `
+                    <h2 class="text-2xl font-bold text-white mb-3 font-heading tracking-tight">Resolve the corrupted code:</h2>
+                    <p class="text-[var(--accent-alert)] font-code text-sm mb-8 bg-black/50 p-4 rounded-xl text-center border border-[rgba(244,63,94,0.2)]">${ex.corrupted}</p>
+                    <input type="text" id="type-ans" class="type-input" placeholder="${ex.hint}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="btn-submit" onclick="handleInput('${ex.expected}')" class="btn-primary">Inject Patch</button>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            if (ex.type === 'input') {
+                const inputEl = document.getElementById('type-ans');
+                inputEl.focus();
+                inputEl.addEventListener('keypress', function(e) { if (e.key === 'Enter') document.getElementById('btn-submit').click(); });
+            }
+        }
+
+        function handleAB(btn, isCorrect) {
+            const buttons = document.getElementById('ab-opts').querySelectorAll('button');
+            buttons.forEach(b => { b.onclick = null; b.style.opacity = '0.5'; });
+            btn.style.opacity = '1';
+
+            const icon = btn.querySelector('.icon-status');
+
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                icon.className = 'fas fa-check-circle text-[var(--accent-primary)] text-xl icon-status drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]';
+                setTimeout(nextQuestion, 700);
+            } else {
+                btn.classList.add('selected-error');
+                icon.className = 'fas fa-times-circle text-[var(--accent-alert)] text-xl icon-status';
+                state.errors++;
+                
+                buttons.forEach(b => {
+                    if(!b.classList.contains('selected-error')) {
+                        b.classList.add('selected-correct'); b.style.opacity = '1';
+                        b.querySelector('.icon-status').className = 'fas fa-check-circle text-[var(--accent-primary)] text-xl icon-status';
+                    }
+                });
+                setTimeout(nextQuestion, 1600);
+            }
+        }
+
+        function handleInput(expected) {
+            const input = document.getElementById('type-ans');
+            const val = input.value.trim().toLowerCase();
+            const btn = document.getElementById('btn-submit');
+
+            // Handling variations for "can't" vs "cannot" etc.
+            const expectedLower = expected.toLowerCase();
+            const isMatch = (val === expectedLower) || 
+                            (expectedLower === "can't have trained" && val === "cannot have trained") ||
+                            (expectedLower === "can't be improving" && val === "cannot be improving") ||
+                            (expectedLower === "can't be" && val === "cannot be");
+
+            if (isMatch) {
+                input.style.borderColor = 'var(--accent-primary)';
+                input.style.color = 'var(--accent-primary)';
+                input.style.boxShadow = 'inset 0 0 15px rgba(34, 211, 238, 0.2)';
+                btn.style.background = 'rgba(34, 211, 238, 0.15)';
+                btn.style.color = 'var(--accent-primary)';
+                btn.style.boxShadow = 'none';
+                btn.innerHTML = '<i class="fas fa-check mr-2"></i> Verified';
+                setTimeout(nextQuestion, 700);
+            } else {
+                input.classList.remove('error');
+                void input.offsetWidth; 
+                input.classList.add('error');
+                input.value = '';
+                input.placeholder = "Try again!";
+                state.errors++;
+            }
+        }
+
+        function nextQuestion() { state.current++; renderQuestion(); }
+
+        function endHomework() {
+            document.getElementById('screen-quiz').classList.add('hide');
+            document.getElementById('screen-result').classList.remove('hide');
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('q-counter').innerText = 'DONE';
+
+            const accuracy = Math.max(0, 100 - (state.errors * 5));
+            const scoreEl = document.getElementById('final-score');
+            scoreEl.innerText = `${accuracy}%`;
+            
+            if(accuracy < 70) {
+                scoreEl.className = "text-6xl font-heading font-bold text-[var(--accent-alert)]";
+                document.querySelector('.fa-brain').className = "fas fa-skull text-5xl text-[var(--accent-alert)]";
+                document.querySelector('.fa-brain').parentElement.className = "w-24 h-24 bg-black/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-[rgba(244,63,94,0.5)] shadow-[0_0_30px_rgba(244,63,94,0.3)]";
+            } else {
+                scoreEl.className = "text-6xl font-heading font-bold text-[var(--accent-primary)]";
+            }
+
+            shootConfetti();
+        }
+
+        // --- VISUAL EFFECTS ---
+        function shootConfetti() {
+            const cCanvas = document.getElementById('confetti'); const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = document.getElementById('mobile-app').offsetWidth; cCanvas.height = document.getElementById('mobile-app').offsetHeight;
+            const pieces = []; const colors = ['#22d3ee', '#818cf8', '#ffffff', '#c7d2fe']; 
+            for(let i=0; i<50; i++) pieces.push({ x: cCanvas.width/2, y: cCanvas.height/2, vx: (Math.random()-0.5)*15, vy: (Math.random()-1)*15-5, size: Math.random()*5+4, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, rotSpeed: (Math.random()-0.5)*10 });
+            function animateC() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height); let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if(p.y < cCanvas.height) active = true;
+                    cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate(p.rot*Math.PI/180); cCtx.fillStyle = p.color; 
+                    cCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size); cCtx.restore();
+                });
+                if(active) requestAnimationFrame(animateC); else cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            }
+            animateC();
+        }
+    </script>
+</body>
+</html>
